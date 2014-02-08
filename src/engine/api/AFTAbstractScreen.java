@@ -16,8 +16,8 @@ public abstract class AFTAbstractScreen extends GameCanvas implements Runnable {
 
         AFTRuntime.SCREEN_WIDTH = getWidth();
         AFTRuntime.SCREEN_HEIGHT = getHeight();
-        AFTRuntime.HALF_SCREEN_WIDTH = getWidth() >> 1;
-        AFTRuntime.HALF_SCREEN_HEIGHT = getHeight() >> 1;
+        AFTRuntime.HALF_SCREEN_WIDTH = getWidth() / 2;
+        AFTRuntime.HALF_SCREEN_HEIGHT = getHeight() / 2;
     }
 
     protected void keyPressed(int keyCode) {
