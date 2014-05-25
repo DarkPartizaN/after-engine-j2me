@@ -15,9 +15,7 @@ public final class AFTResourceUtils {
     private static final Image null_image = create_null_image(); //Emo-texture for missed images :)
 
     private static Image create_null_image() {
-        Image tmp;
-        tmp = Image.createImage(32, 32);
-
+        Image tmp = Image.createImage(32, 32);
         Graphics g = tmp.getGraphics();
 
         g.setColor(0);
@@ -70,7 +68,7 @@ public final class AFTResourceUtils {
 
         if (w == w2 && h == h2) return img;
 
-        int[] pixels = new int[w * h], temp = new int[w2 * h2];
+        int[] pixels = new int[w * h], tmp = new int[w2 * h2];
         img.getRGB(pixels, 0, w, 0, 0, w, h);
 
         int x_diff, y_diff;
@@ -79,11 +77,11 @@ public final class AFTResourceUtils {
             y_diff = (y * h) / h2;
             for (int x = 0; x < w2; x++) {
                 x_diff = (x * w) / w2;
-                temp[w2 * y + x] = pixels[w * y_diff + x_diff];
+                tmp[w2 * y + x] = pixels[w * y_diff + x_diff];
             }
         }
 
-        return Image.createRGBImage(temp, w2, h2, true);
+        return Image.createRGBImage(tmp, w2, h2, true);
     }
 
     private static Image resize_image_bilinear(Image img, int w2, int h2) {
@@ -91,7 +89,7 @@ public final class AFTResourceUtils {
 
         if (w == w2 && h == h2) return img;
 
-        int[] pixels = new int[w * h], temp = new int[w2 * h2];
+        int[] pixels = new int[w * h], tmp = new int[w2 * h2];
         img.getRGB(pixels, 0, w, 0, 0, w, h);
 
         int a, b, c, d, x, y, index;
@@ -118,11 +116,11 @@ public final class AFTResourceUtils {
                 green = ((a >> 8) & 0xff) * (1 - x_diff) * (1 - y_diff) + ((b >> 8) & 0xff) * (x_diff) * (1 - y_diff) + ((c >> 8) & 0xff) * (y_diff) * (1 - x_diff) + ((d >> 8) & 0xff) * (x_diff * y_diff);
                 red = ((a >> 16) & 0xff) * (1 - x_diff) * (1 - y_diff) + ((b >> 16) & 0xff) * (x_diff) * (1 - y_diff) + ((c >> 16) & 0xff) * (y_diff) * (1 - x_diff) + ((d >> 16) & 0xff) * (x_diff * y_diff);
 
-                temp[offset++] = ((int) blue) | (((int) green) << 8) | ((((int) red) << 16) | (((int) alpha) << 24));
+                tmp[offset++] = ((int) blue) | (((int) green) << 8) | ((((int) red) << 16) | (((int) alpha) << 24));
             }
         }
 
-        return Image.createRGBImage(temp, w2, h2, true);
+        return Image.createRGBImage(tmp, w2, h2, true);
     }
 
     public final static Image set_transparency(Image img, float transparency, boolean save_alpha) {
@@ -130,10 +128,13 @@ public final class AFTResourceUtils {
         int[] tmp = new int[w * h];
         img.getRGB(tmp, 0, w, 0, 0, w, h);
 
-        int a = ~(int) (0xff * transparency) << 24;
-
-        if (save_alpha) for (int i = 0; i < tmp.length; i++) tmp[i] &= ~((int) ((0xff & tmp[i] >> 24) * transparency) << 24);
-        else for (int i = 0; i < tmp.length; i++) tmp[i] |= a;
+        if (save_alpha)
+            for (int i = 0; i < tmp.length; i++)
+                tmp[i] &= ~((int) ((0xff & tmp[i] >> 24) * transparency) << 24);
+        else {
+            int a = ~(int) (0xff * transparency) << 24;
+            for (int i = 0; i < tmp.length; i++) tmp[i] |= a;
+        }
 
         return Image.createRGBImage(tmp, w, h, true);
     }
@@ -141,10 +142,8 @@ public final class AFTResourceUtils {
     //Blur
     public static Image smooth_image(Image img, int blurHor, int blurVer) {
         int w = img.getWidth(), h = img.getHeight();
-        int[] pixels = new int[w * h];
+        int[] pixels = new int[w * h], pixels2 = new int[pixels.length];
         img.getRGB(pixels, 0, w, 0, 0, w, h);
-
-        int[] pixels2 = new int[pixels.length];
 
         pixels2 = box_blur(pixels, pixels2, w, h, blurHor);
         pixels = box_blur(pixels2, pixels, h, w, blurVer);
